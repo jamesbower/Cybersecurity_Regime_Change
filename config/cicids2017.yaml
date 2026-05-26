@@ -1,0 +1,6 @@
+dataset:
+  name: cicids2017
+  raw_dir: data/raw/cicids2017
+  processed_dir: data/processed
+  split_ratios: [0.6, 0.2, 0.2]
+  baseline_hours: 1.0
