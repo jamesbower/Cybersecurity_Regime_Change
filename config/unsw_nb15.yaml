@@ -1,0 +1,6 @@
+dataset:
+  name: unsw_nb15
+  raw_dir: data/raw/unsw_nb15
+  processed_dir: data/processed
+  pca_components: 17
+  pca_random_state: 42

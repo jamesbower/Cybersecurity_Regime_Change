@@ -1,0 +1,10 @@
+numpy==1.26.4
+scipy==1.13.0
+pandas==2.2.2
+scikit-learn==1.5.0
+filterpy==1.4.5
+pyarrow==16.0.0
+pyyaml==6.0.1
+omegaconf==2.3.0
+pytest==8.2.0
+tqdm==4.66.4

@@ -1,0 +1,24 @@
+[project]
+name = "pard-ssm"
+version = "0.1.0"
+description = "PARD-SSM Phase 1 — Probabilistic Cyber-Attack Regime Detection via Variational Switching State-Space Models"
+requires-python = ">=3.12,<3.13"
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["pard_ssm*"]
+exclude = ["tests*", "scripts*", "data*", "docs*", "config*", "notes*", "results*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q --strict-markers --strict-config"
+markers = [
+    "slow: marks tests as slow (deselect with -m 'not slow')",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"

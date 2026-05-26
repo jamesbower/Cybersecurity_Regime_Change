@@ -1,0 +1,27 @@
+model:
+  K: 4
+  n: 8
+  m: 17
+  k_max: 15
+  epsilon: 1.0e-4
+
+online_em:
+  eta: 0.01
+
+kl_gating:
+  tau_kl: 2.0
+
+window:
+  W: 1.0
+  overlap_s: 0.5
+
+batch_em:
+  max_iters: 20
+  subsample_frac: 0.1
+  random_state: 42
+
+mode_collapse:
+  window_threshold: 100
+
+logging:
+  level: INFO
