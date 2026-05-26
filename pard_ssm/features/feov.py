@@ -1,6 +1,8 @@
 """FEOV - 17-dim observation vector for CICIDS2017 - spec §6.
 
 Proxy notes (spec §15):
+- Dim 6 (n_dip): proxied by count of distinct destination ports per window
+  (CICFlowMeter does not expose destination IP, which the spec asks for).
 - Dim 9 (H_payload): proxied by entropy of Packet Length Mean values per window.
 - Dim 13 (F_rate): proxied by Fwd Header Length / Total Fwd Packets.
 - Dim 15 (DNS_QR): proxied by fraction of flows with Destination Port == 53; DGA score = 0.
@@ -26,7 +28,7 @@ def shannon_entropy(counts: Iterable[float]) -> float:
     return float(-np.sum(p * np.log(p)))
 
 
-def _window_feov(flows: pd.DataFrame) -> np.ndarray:
+def _window_feov(flows: pd.DataFrame, window_s: float) -> np.ndarray:
     if len(flows) == 0:
         return np.zeros(17, dtype=np.float64)
 
@@ -66,7 +68,7 @@ def _window_feov(flows: pd.DataFrame) -> np.ndarray:
     dns_count = (flows["Destination Port"] == 53).sum()
     dns_qr = float(dns_count / len(flows))
     icmp_count = (flows["Protocol"] == 1).sum()
-    icmp_rate = float(icmp_count / max(delta_t, EPS))
+    icmp_rate = float(icmp_count / max(window_s, EPS))
     http_mask = flows["Destination Port"].isin([80, 443])
     h_http = shannon_entropy(flows.loc[http_mask, "Destination Port"].value_counts().values)
 
@@ -100,5 +102,5 @@ def compute_feov(flow_df: pd.DataFrame, window_s: float = 1.0, overlap_s: float 
         chunk = df.loc[mask]
         if len(chunk) == 0:
             log.debug("FEOV window %d empty (t=%s)", i, ws)
-        Y[i] = _window_feov(chunk)
+        Y[i] = _window_feov(chunk, window_s)
     return Y
