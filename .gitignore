@@ -16,6 +16,7 @@ venv/
 htmlcov/
 .DS_Store
 data/
+!pard_ssm/data/
 notes/
 /docs/superpowers/
 .claude/
