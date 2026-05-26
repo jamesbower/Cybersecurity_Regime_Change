@@ -53,10 +53,10 @@ class DatasetCfg:
     name: str = ""
     raw_dir: str = ""
     processed_dir: str = ""
-    split_ratios: list = field(default_factory=lambda: [0.6, 0.2, 0.2])
-    baseline_hours: float = 1.0
-    pca_components: int = 17
-    pca_random_state: int = 42
+    split_ratios: list[float] = field(default_factory=lambda: [0.6, 0.2, 0.2])
+    baseline_hours: Optional[float] = None
+    pca_components: Optional[int] = None
+    pca_random_state: Optional[int] = None
 
 
 @dataclass
@@ -69,6 +69,9 @@ class PARDSSMConfig:
     mode_collapse: ModeCollapseCfg
     logging: LoggingCfg
     dataset: DatasetCfg = field(default_factory=DatasetCfg)
+
+
+_VALID_LOG_LEVELS = {"CRITICAL", "ERROR", "WARNING", "INFO", "DEBUG", "NOTSET"}
 
 
 def _validate(cfg: PARDSSMConfig) -> None:
@@ -86,6 +89,36 @@ def _validate(cfg: PARDSSMConfig) -> None:
         raise ValueError(f"online_em.eta must be non-negative, got {cfg.online_em.eta}")
     if cfg.kl_gating.tau_kl < 0:
         raise ValueError(f"kl_gating.tau_kl must be non-negative, got {cfg.kl_gating.tau_kl}")
+    if cfg.window.W <= 0:
+        raise ValueError(f"window.W must be positive, got {cfg.window.W}")
+    if cfg.window.overlap_s < 0:
+        raise ValueError(
+            f"window.overlap_s must be non-negative, got {cfg.window.overlap_s}"
+        )
+    if cfg.window.overlap_s >= cfg.window.W:
+        raise ValueError(
+            f"window.overlap_s ({cfg.window.overlap_s}) must be less than "
+            f"window.W ({cfg.window.W})"
+        )
+    if cfg.batch_em.max_iters <= 0:
+        raise ValueError(
+            f"batch_em.max_iters must be positive, got {cfg.batch_em.max_iters}"
+        )
+    if not (0.0 < cfg.batch_em.subsample_frac <= 1.0):
+        raise ValueError(
+            f"batch_em.subsample_frac must be in (0.0, 1.0], got "
+            f"{cfg.batch_em.subsample_frac}"
+        )
+    if cfg.mode_collapse.window_threshold <= 0:
+        raise ValueError(
+            f"mode_collapse.window_threshold must be positive, got "
+            f"{cfg.mode_collapse.window_threshold}"
+        )
+    if cfg.logging.level not in _VALID_LOG_LEVELS:
+        raise ValueError(
+            f"logging.level must be one of {sorted(_VALID_LOG_LEVELS)}, got "
+            f"{cfg.logging.level!r}"
+        )
 
 
 def load_config(default_path: Path, dataset_path: Optional[Path] = None) -> PARDSSMConfig:

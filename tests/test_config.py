@@ -39,3 +39,35 @@ def test_validation_rejects_negative_k(tmp_path):
     )
     with pytest.raises(ValueError, match="K"):
         load_config(bad)
+
+
+def test_validation_rejects_zero_window_W(tmp_path):
+    bad = tmp_path / "bad.yaml"
+    bad.write_text(
+        "model: {K: 4, n: 8, m: 17, k_max: 15, epsilon: 1.0e-4}\n"
+        "online_em: {eta: 0.01}\n"
+        "kl_gating: {tau_kl: 2.0}\n"
+        "window: {W: 0, overlap_s: 0.0}\n"
+        "batch_em: {max_iters: 20, subsample_frac: 0.1, random_state: 42}\n"
+        "mode_collapse: {window_threshold: 100}\n"
+        "logging: {level: INFO}\n"
+    )
+    with pytest.raises(ValueError, match="window.W"):
+        load_config(bad)
+
+
+def test_dataset_overlapping_key_uses_override_value(tmp_path):
+    base = tmp_path / "base.yaml"
+    base.write_text(
+        "model: {K: 4, n: 8, m: 17, k_max: 15, epsilon: 1.0e-4}\n"
+        "online_em: {eta: 0.01}\n"
+        "kl_gating: {tau_kl: 2.0}\n"
+        "window: {W: 1.0, overlap_s: 0.5}\n"
+        "batch_em: {max_iters: 20, subsample_frac: 0.1, random_state: 42}\n"
+        "mode_collapse: {window_threshold: 100}\n"
+        "logging: {level: INFO}\n"
+    )
+    override = tmp_path / "override.yaml"
+    override.write_text("model: {K: 2}\n")
+    cfg = load_config(base, override)
+    assert cfg.model.K == 2
