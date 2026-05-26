@@ -1,0 +1,4 @@
+id,dur,proto,service,state,sbytes,dbytes,sttl,dttl,sloss,dloss,Sload,Dload,Spkts,Dpkts,smean,dmean,trans_depth,response_body_len,ct_srv_src,ct_state_ttl,ct_dst_ltm,ct_src_dport_ltm,ct_dst_sport_ltm,ct_dst_src_ltm,is_ftp_login,ct_ftp_cmd,ct_flw_http_mthd,ct_src_ltm,ct_srv_dst,is_sm_ips_ports,attack_cat,Label
+1,0.3,tcp,http,FIN,800,600,64,64,0,0,2666.0,2000.0,8,6,100,100,1,300,1,1,1,1,1,1,0,0,1,1,1,0,Normal,0
+2,0.1,tcp,-,INT,20,0,64,0,0,0,200.0,0.0,1,0,20,0,0,0,1,1,1,1,1,1,0,0,0,1,1,0,DoS,1
+3,2.0,udp,dns,REQ,160,400,64,64,0,0,80.0,200.0,4,4,40,100,0,0,1,1,1,1,1,1,0,0,0,1,1,0,Normal,0
