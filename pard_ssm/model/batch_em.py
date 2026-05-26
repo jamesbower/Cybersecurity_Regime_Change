@@ -92,7 +92,9 @@ def batch_em_warm_start(
     for s in range(K):
         Y_s = Y[labels == s]
         if 0.0 < subsample_frac < 1.0 and len(Y_s) > 0:
-            keep = max(int(len(Y_s) * subsample_frac), 2)
+            # Clamp to len(Y_s): for tiny inputs (e.g. smoke tests) we may have
+            # fewer windows per regime than the floor of 2.
+            keep = min(max(int(len(Y_s) * subsample_frac), 2), len(Y_s))
             idx = rng.choice(len(Y_s), size=keep, replace=False)
             idx.sort()
             Y_s = Y_s[idx]
